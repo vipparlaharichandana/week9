@@ -1,0 +1,48 @@
+
+import java.sql.*;
+
+public class InsertUsers {
+
+    static final String JDBC_URL =
+        "jdbc:mysql://localhost:3306/mydatabase";
+    static final String USERNAME = "root";
+    static final String PASSWORD = "your_password";
+
+    public static void main(String[] args) {
+
+        String createTable =
+            "CREATE TABLE IF NOT EXISTS users (" +
+            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+            "name VARCHAR(100), " +
+            "email VARCHAR(100))";
+
+        String insertQuery =
+            "INSERT INTO users (name, email) VALUES (?, ?)";
+
+        try (Connection con = DriverManager.getConnection(
+                JDBC_URL, USERNAME, PASSWORD)) {
+
+            try (PreparedStatement createStmt =
+                    con.prepareStatement(createTable)) {
+                createStmt.executeUpdate();
+            }
+
+            try (PreparedStatement pstmt =
+                    con.prepareStatement(insertQuery)) {
+
+                pstmt.setString(1, "John Doe");
+                pstmt.setString(2, "john@example.com");
+                pstmt.executeUpdate();
+
+                pstmt.setString(1, "Jane Doe");
+                pstmt.setString(2, "jane@example.com");
+                pstmt.executeUpdate();
+            }
+
+            System.out.println("Data inserted successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        }
+    }
+}
